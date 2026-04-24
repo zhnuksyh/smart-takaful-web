@@ -68,10 +68,20 @@ App starts on `http://localhost:8080`. See `README.md` for environment variables
 
 ## Environment Variables (Railway-friendly)
 
-All read from env, never committed:
-- `SPRING_DATASOURCE_URL` — Supabase JDBC URL (e.g. `jdbc:postgresql://db.xxxx.supabase.co:5432/postgres`)
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
-- `SPRING_PROFILES_ACTIVE` — `dev` locally, `prod` on Railway
+All read from env, never committed. A local `.env` is auto-loaded at startup via `spring-dotenv`:
+
+- `SPRING_PROFILES_ACTIVE` — `dev` (H2 in-memory, offline) or `prod` (Supabase).
+- `SPRING_DATASOURCE_URL` — Supabase transaction pooler JDBC URL (see below).
+- `SPRING_DATASOURCE_USERNAME` — `postgres.<project-ref>`, **not** plain `postgres`.
+- `SPRING_DATASOURCE_PASSWORD` — the Supabase DB password (reset in Project Settings → Database → Database password if lost). The publishable/anon API key is **not** accepted here.
 
 `.env.example` lists the placeholders. Copy to `.env` locally (gitignored).
+
+## Supabase connection (Transaction pooler)
+
+The `prod` profile connects through Supabase's **transaction pooler** on port **6543** rather than the direct `db.<ref>.supabase.co:5432` host. This avoids the IPv4 add-on requirement and plays well with Railway's networking.
+
+- JDBC URL: `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:6543/postgres`
+- Username: `postgres.<project-ref>` (project ref for this codebase is `bpvphhicisctyhqiiayk`).
+- **Prepared statements:** the transaction pooler does **not** support server-side prepared statements. `application-prod.yml` sets `prepareThreshold=0` and `preparedStatementCacheQueries=0` on the Hikari datasource; do not remove these — Hibernate will start throwing `PSQLException: prepared statement "S_1" does not exist` errors in minutes under load.
+- **Schema management:** `ddl-auto=update` in prod so Hibernate auto-migrates the `leads` and `products` tables. Switch to Flyway/Liquibase if/when the schema starts changing frequently — not needed for a university submission.
