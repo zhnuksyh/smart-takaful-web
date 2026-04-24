@@ -25,7 +25,10 @@ public class Lead {
     private String fullName;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^\\+?[0-9]{10,13}$", message = "Invalid phone number format")
+    @Pattern(
+            regexp = "^[+0-9\\s\\-()]{10,20}$",
+            message = "Phone number must contain 10-20 digits (spaces, dashes, parens are allowed)"
+    )
     private String phoneNumber;
 
     @NotBlank(message = "Product interest is required")

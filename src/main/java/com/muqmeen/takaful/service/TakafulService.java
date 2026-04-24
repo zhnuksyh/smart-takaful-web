@@ -18,6 +18,8 @@ public class TakafulService {
     }
 
     public Lead processNewLead(Lead lead) {
+        lead.setPhoneNumber(normalizePhoneNumber(lead.getPhoneNumber()));
+
         if (lead.getTipAmount() != null && lead.getTipAmount().compareTo(BigDecimal.ZERO) > 0) {
             String generatedBillCode = "MGM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             lead.setBillCode(generatedBillCode);
@@ -26,6 +28,11 @@ public class TakafulService {
             lead.setPaymentStatus("SKIPPED");
         }
         return leadRepository.save(lead);
+    }
+
+    private String normalizePhoneNumber(String raw) {
+        if (raw == null) return null;
+        return raw.replaceAll("[^0-9]", "");
     }
 
     public List<Lead> getAllLeadsForAdmin() {
