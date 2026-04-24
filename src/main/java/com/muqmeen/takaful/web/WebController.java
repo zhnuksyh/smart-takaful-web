@@ -2,8 +2,10 @@ package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.domain.Lead;
 import com.muqmeen.takaful.service.TakafulService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +32,20 @@ public class WebController {
     }
 
     @PostMapping("/submit-lead")
-    public String submitLead(@ModelAttribute Lead lead) {
+    public String submitLead(@Valid @ModelAttribute("lead") Lead lead,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("formError", true);
+            return "index";
+        }
+
         Lead savedLead = takafulService.processNewLead(lead);
 
         if (savedLead.getBillCode() != null) {
             return "redirect:/payment/mock/" + savedLead.getBillCode();
         }
-        return "redirect:/success";
+        return "redirect:/success?leadId=" + savedLead.getId();
     }
 
     @GetMapping("/payment/mock/{billCode}")
@@ -51,11 +60,17 @@ public class WebController {
         if ("1".equals(statusId)) {
             takafulService.updatePaymentStatus(billCode, "PAID");
         }
-        return "redirect:/success";
+        return takafulService.findLeadByBillCode(billCode)
+                .map(lead -> "redirect:/success?leadId=" + lead.getId())
+                .orElse("redirect:/success");
     }
 
     @GetMapping("/success")
-    public String successPage() {
+    public String successPage(@RequestParam(value = "leadId", required = false) Long leadId,
+                              Model model) {
+        if (leadId != null) {
+            takafulService.findLead(leadId).ifPresent(lead -> model.addAttribute("lead", lead));
+        }
         return "success";
     }
 

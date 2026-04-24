@@ -12,7 +12,8 @@
         .smooth-transition { transition: all 0.3s ease; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col"
+      th:attr="data-form-error=${formError}">
 
     <nav class="bg-white shadow-sm z-50 sticky top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,6 +122,14 @@
                 </div>
 
                 <div class="p-6 overflow-y-auto">
+                    <div th:if="${formError}"
+                         class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                        <p class="font-semibold mb-1">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                            Please fix the highlighted fields below.
+                        </p>
+                    </div>
+
                     <form id="consultation-form" th:action="@{/submit-lead}" th:object="${lead}" method="post">
                         <input type="hidden" name="productType" id="productType" th:field="*{productType}">
 
@@ -128,7 +137,11 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
                                 <input type="text" name="fullName" th:field="*{fullName}" required
-                                       class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                       th:classappend="${#fields.hasErrors('fullName')} ? 'border-red-400 focus:ring-red-500' : 'border-slate-300 focus:ring-red-500'"
+                                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:border-red-500 outline-none">
+                                <p th:if="${#fields.hasErrors('fullName')}"
+                                   th:errors="*{fullName}"
+                                   class="text-xs text-red-600 mt-1">Name error</p>
                             </div>
 
                             <div>
@@ -136,20 +149,28 @@
                                 <div class="flex">
                                     <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-50 text-slate-500 sm:text-sm">+60</span>
                                     <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" placeholder="123456789" required
-                                           pattern="^\+?[0-9]{10,13}$"
-                                           class="flex-1 min-w-0 block w-full px-4 py-2 rounded-none rounded-r-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                           th:classappend="${#fields.hasErrors('phoneNumber')} ? 'border-red-400 focus:ring-red-500' : 'border-slate-300 focus:ring-red-500'"
+                                           class="flex-1 min-w-0 block w-full px-4 py-2 rounded-none rounded-r-lg border focus:ring-2 focus:border-red-500 outline-none">
                                 </div>
-                                <p class="text-xs text-slate-400 mt-1">Enter with country code, e.g. 60123456789.</p>
+                                <p th:if="${#fields.hasErrors('phoneNumber')}"
+                                   th:errors="*{phoneNumber}"
+                                   class="text-xs text-red-600 mt-1">Phone error</p>
+                                <p th:unless="${#fields.hasErrors('phoneNumber')}"
+                                   class="text-xs text-slate-400 mt-1">Enter your WhatsApp number, e.g. 0123456789 or 60123456789.</p>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Consultation Mode <span class="text-red-500">*</span></label>
                                 <select name="consultationMode" th:field="*{consultationMode}" required
-                                        class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                        th:classappend="${#fields.hasErrors('consultationMode')} ? 'border-red-400 focus:ring-red-500' : 'border-slate-300 focus:ring-red-500'"
+                                        class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:border-red-500 outline-none">
                                     <option value="WhatsApp">WhatsApp Text (Quick)</option>
                                     <option value="Voice/Video Call">Voice/Video Call</option>
                                     <option value="Face-to-Face">Face-to-Face Meeting (Klang Valley)</option>
                                 </select>
+                                <p th:if="${#fields.hasErrors('consultationMode')}"
+                                   th:errors="*{consultationMode}"
+                                   class="text-xs text-red-600 mt-1">Mode error</p>
                             </div>
 
                             <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -225,6 +246,11 @@
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
         });
+
+        if (document.body.dataset.formError === 'true') {
+            const product = productTypeInput.value || 'Consultation';
+            openModal(product);
+        }
     </script>
 </body>
 </html>

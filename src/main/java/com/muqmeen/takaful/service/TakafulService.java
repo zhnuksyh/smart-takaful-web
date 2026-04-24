@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,6 +38,14 @@ public class TakafulService {
 
     public List<Lead> getAllLeadsForAdmin() {
         return leadRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public Optional<Lead> findLead(Long id) {
+        return leadRepository.findById(id);
+    }
+
+    public Optional<Lead> findLeadByBillCode(String billCode) {
+        return Optional.ofNullable(leadRepository.findByBillCode(billCode));
     }
 
     public void updateLeadStatus(Long id, String status) {
