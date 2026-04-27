@@ -50,13 +50,28 @@ takaful-web-java/
 
 ## Takeover Roadmap
 
-1. **Architecture Setup** — Maven scaffold, package split, Thymeleaf templates, Tailwind CDN. *(current step, branch `feat/architecture-setup`)*
+1. **Architecture Setup** — Maven scaffold, package split, Thymeleaf templates, Tailwind CDN.
 2. **Database Integration** — Supabase JDBC/JPA connection, `Lead` + `Product` entities.
 3. **Refactor Leads to DB** — Wire form → service → Supabase end-to-end.
 4. **Admin Product CRUD** — Thymeleaf admin views for dynamic Takaful product management.
-5. **UI Overhaul** — Yellow/Black palette, Tailwind build pipeline, Alpine.js interactions.
+5. **UI Overhaul** — Yellow/Black palette, Tailwind build pipeline, Alpine.js interactions. *(deferred)*
+6. **Gemini chatbot** — Floating Takaful-grounded chatbot on the landing page (out-of-roadmap addition).
 
 Spring Security hardening is a dedicated pass after Step 3, not inside the roadmap.
+
+## Chatbot (Gemini, free tier)
+
+Floating chat bubble on the public landing page. Backend at `POST /api/chat`. Lives entirely under `service/chat/` and `web/ChatController.java`.
+
+- **Model**: `gemini-2.0-flash` via Google AI Studio's free tier (1500 requests/day, 15 RPM). Configured via `GEMINI_API_KEY` env var; the model id and base URL are overridable via `GEMINI_MODEL` / `GEMINI_BASE_URL` for future migration.
+- **Lightweight RAG**: every request injects a system prompt assembled from hardcoded Muqmeen / Takaful / Hibah / consultation facts (in [`ChatKnowledgeBase`](src/main/java/com/muqmeen/takaful/service/chat/ChatKnowledgeBase.java)) plus the live active product list from `ProductService.listActiveForLanding()`. The prompt is cached for 60 seconds so chat turns don't hit Supabase per request.
+- **Topic gate (defense in depth)**:
+  1. The Takaful-only gating rule appears at both the top and bottom of the system prompt.
+  2. A regex deny-list in `ChatService.JAILBREAK_PATTERN` rejects obvious jailbreak markers (`ignore previous`, `reveal system prompt`, DAN, etc.) before the call to Gemini.
+  3. `ChatController` enforces a per-IP rate limit of 6 requests/minute to protect the daily quota.
+  4. The system prompt instructs plain-text replies (no markdown), so the browser JS can render via `textContent` — no HTML sanitizer needed.
+- **No history persistence**: conversation state is kept client-side in a JS array; the last 6 turns are echoed back on each request.
+- **Updating static facts**: edit the `STATIC_FACTS` constant in `ChatKnowledgeBase.java` and restart. Product facts come from the database automatically.
 
 ## Running Locally
 
