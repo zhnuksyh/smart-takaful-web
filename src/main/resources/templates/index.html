@@ -14,7 +14,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body x-data="bookingFlow()" x-init="initBooking()" class="text-slate-800 antialiased min-h-screen flex flex-col"
-      th:attr="data-form-error=${formError}">
+      th:attr="data-form-error=${formError},data-selected-product=${selectedProductName}">
 
     <nav class="bg-white shadow-sm z-50 sticky top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,9 +25,21 @@
                 </a>
                 <div class="flex items-center space-x-4">
                     <a href="/" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">Home</a>
+                    <a th:if="${customerSignedIn}" href="/account" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
+                        <i class="fa-solid fa-user mr-1"></i> Account
+                    </a>
+                    <a th:unless="${customerSignedIn}" href="/login" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Login
+                    </a>
                     <a href="/admin/dashboard" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
                         <i class="fa-solid fa-lock mr-1"></i> Admin
                     </a>
+                    <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post" class="inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -88,12 +100,17 @@
                             <h3 class="text-xl font-bold text-slate-900 mb-2" th:text="${product.name}">Product</h3>
                             <p class="text-slate-600 text-sm mb-4" th:text="${product.description}">Description</p>
                         </div>
-                        <button type="button"
+                        <button th:if="${customerSignedIn}" type="button"
                                 th:data-product-name="${product.name}"
                                 @click="openBooking($el.dataset.productName || 'Consultation')"
                                 class="w-full bg-zinc-950 hover:bg-yellow-400 text-white hover:text-zinc-950 font-medium py-3 rounded-lg smooth-transition">
                             I'm Interested
                         </button>
+                        <a th:unless="${customerSignedIn}"
+                           th:href="@{/login(redirect=${'/?productId=' + product.id})}"
+                           class="block text-center w-full bg-zinc-950 hover:bg-yellow-400 text-white hover:text-zinc-950 font-medium py-3 rounded-lg smooth-transition">
+                            Sign in to Continue
+                        </a>
                     </div>
                 </div>
             </div>
@@ -365,6 +382,10 @@
                     const tipInput = document.querySelector('input[name="tipAmount"]');
                     if (productInput && productInput.value) this.selectedProduct = productInput.value;
                     if (tipInput && tipInput.value) this.selectedTip = tipInput.value;
+                    if (document.body.dataset.selectedProduct) {
+                        this.selectedProduct = document.body.dataset.selectedProduct;
+                        this.bookingOpen = true;
+                    }
                     if (document.body.dataset.formError === 'true') {
                         this.selectedProduct = this.selectedProduct || 'Consultation';
                         this.bookingOpen = true;

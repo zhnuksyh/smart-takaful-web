@@ -17,7 +17,7 @@
         <p class="text-slate-500 text-sm mb-4">Bill Code:
             <span class="font-mono font-semibold text-slate-700" th:text="${billCode}">MGM-XXXXXXXX</span>
         </p>
-        <p class="text-xs text-slate-400 mb-6">This is a simulated gateway for the prototype. Real ToyyibPay integration lands after Step 4.</p>
+        <p class="text-xs text-slate-400 mb-6">This local mock keeps development smooth when ToyyibPay cannot call localhost.</p>
 
         <div class="flex space-x-3">
             <a th:href="@{/payment/callback(billcode=${billCode},status_id=1)}"
