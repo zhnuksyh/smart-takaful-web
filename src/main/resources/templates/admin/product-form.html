@@ -22,6 +22,12 @@
             <div class="flex items-center gap-4 text-sm font-medium">
                 <a href="/admin/dashboard" class="text-slate-600 hover:text-red-600">Leads</a>
                 <a href="/admin/products" class="text-red-600 font-semibold">Products</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="text-slate-600 hover:text-red-600">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
@@ -42,6 +48,7 @@
                   th:object="${product}"
                   method="post"
                   class="space-y-6">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">

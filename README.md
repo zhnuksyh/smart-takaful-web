@@ -10,8 +10,6 @@ Muqmeen Group digital funnel — a Spring Boot monolith that replaces manual Tak
 - Spring Data JPA on Supabase (PostgreSQL) in prod; H2 in dev
 - Deployment target: Railway
 
-See [CLAUDE.md](./CLAUDE.md) for the full set of project rules, UI palette decisions, and the 5-step takeover roadmap.
-
 ## Requirements
 
 - JDK 17 or newer (tested with OpenJDK 21)
@@ -36,7 +34,8 @@ App starts on `http://localhost:8080`. Key routes:
 | `GET /payment/mock/{billCode}` | Simulated ToyyibPay gateway |
 | `GET /payment/callback` | Callback endpoint (`status_id=1` marks the lead paid) |
 | `GET /success` | Post-submission confirmation |
-| `GET /admin/dashboard` | Leads table + total tips KPI (open in Step 1; locked down in the post-Step-3 hardening pass) |
+| `GET /admin/dashboard` | Protected leads table + total tips KPI |
+| `GET /admin/products` | Protected product CRUD |
 
 The default profile is `dev`, which spins up an in-memory H2 database — no external credentials required.
 
@@ -48,6 +47,8 @@ Environment variables are listed in [`.env.example`](./.env.example). Copy to a 
 - `SPRING_DATASOURCE_URL` — Supabase JDBC URL, e.g. `jdbc:postgresql://db.xxxx.supabase.co:5432/postgres`
 - `SPRING_DATASOURCE_USERNAME` — Supabase DB user
 - `SPRING_DATASOURCE_PASSWORD` — Supabase DB password
+- `ADMIN_USERNAME` / `ADMIN_PASSWORD` — Spring Security admin login for `/admin/**`
+- `GEMINI_API_KEY` — Google AI Studio key for the floating chatbot
 - `TOYYIBPAY_API_KEY` / `TOYYIBPAY_CATEGORY_CODE` — real ToyyibPay keys (after Step 4)
 
 Spring Boot reads these env vars directly, so Railway's built-in env management works out of the box.
@@ -58,7 +59,6 @@ Spring Boot reads these env vars directly, so Railway's built-in env management 
 takaful-web-java/
 ├── pom.xml
 ├── mvnw, mvnw.cmd, .mvn/        Maven wrapper (no binary jar; downloads Maven on first use)
-├── CLAUDE.md                    Project rules and takeover roadmap
 ├── .env.example                 Env var template
 └── src/main/
     ├── java/com/muqmeen/takaful/
@@ -86,4 +86,4 @@ takaful-web-java/
 4. **Admin Product CRUD** — `Product` entity + admin views for dynamic product management.
 5. **UI Overhaul** — Yellow/Black palette, Tailwind build pipeline, Alpine.js interactions.
 
-Spring Security hardening is a dedicated pass after Step 3.
+Spring Security protects `/admin/**`; public lead submission, mock payment, success, and chat routes remain accessible without login.
