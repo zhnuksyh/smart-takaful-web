@@ -15,7 +15,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="/" class="flex items-center">
                 <i class="fa-solid fa-shield-halved text-yellow-500 text-2xl mr-2"></i>
-                <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
+                <span class="font-semibold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
             </a>
             <div class="flex items-center gap-4 text-sm font-medium">
                 <a href="/" class="text-zinc-600 hover:text-yellow-600">Products</a>
@@ -33,27 +33,27 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-8">
             <p class="text-sm text-zinc-500">Signed in as <span class="font-semibold text-zinc-800" th:text="${customer.email}">user@example.com</span></p>
-            <h1 class="text-3xl font-bold text-zinc-950 mt-1">My Consultation History</h1>
+            <h1 class="text-3xl font-semibold text-zinc-950 mt-1">My Consultation History</h1>
         </div>
 
         <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="brand-shell rounded-lg p-5">
                 <p class="text-xs font-semibold text-zinc-500 uppercase">Total</p>
-                <p class="text-2xl font-bold mt-1" th:text="${totalConsultations}">0</p>
+                <p class="text-2xl font-semibold mt-1" th:text="${totalConsultations}">0</p>
             </div>
             <div class="brand-shell rounded-lg p-5">
                 <p class="text-xs font-semibold text-zinc-500 uppercase">Pending</p>
-                <p class="text-2xl font-bold mt-1" th:text="${pendingConsultations}">0</p>
+                <p class="text-2xl font-semibold mt-1" th:text="${pendingConsultations}">0</p>
             </div>
             <div class="brand-shell rounded-lg p-5">
                 <p class="text-xs font-semibold text-zinc-500 uppercase">Contacted / Closed</p>
-                <p class="text-2xl font-bold mt-1">
+                <p class="text-2xl font-semibold mt-1">
                     <span th:text="${contactedConsultations}">0</span>/<span th:text="${closedConsultations}">0</span>
                 </p>
             </div>
             <div class="brand-shell rounded-lg p-5">
                 <p class="text-xs font-semibold text-zinc-500 uppercase">Paid Tips</p>
-                <p class="text-2xl font-bold mt-1">RM <span th:text="${#numbers.formatDecimal(paidTips, 1, 2)}">0.00</span></p>
+                <p class="text-2xl font-semibold mt-1">RM <span th:text="${#numbers.formatDecimal(paidTips, 1, 2)}">0.00</span></p>
             </div>
         </section>
 

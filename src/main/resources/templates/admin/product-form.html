@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <a href="/" class="flex items-center">
                 <i class="fa-solid fa-shield-halved text-yellow-500 text-2xl mr-2"></i>
-                <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
+                <span class="font-semibold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
                 <span class="ml-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin</span>
             </a>
             <div class="flex items-center gap-4 text-sm font-medium">
@@ -37,7 +37,7 @@
             <a href="/admin/products" class="text-sm text-slate-500 hover:text-yellow-500">
                 <i class="fa-solid fa-arrow-left mr-1"></i> Back to products
             </a>
-            <h1 class="text-2xl font-bold text-slate-900 mt-2"
+            <h1 class="text-2xl font-semibold text-slate-900 mt-2"
                 th:text="${formMode == 'edit'} ? 'Edit Product' : 'Add Product'">Add Product</h1>
             <p class="text-slate-500 text-sm">Fields marked <span class="text-yellow-500">*</span> are required.</p>
         </div>
