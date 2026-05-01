@@ -40,9 +40,13 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerForm(@RequestParam(value = "redirect", required = false) String redirect, Model model) {
+    public String registerForm(@RequestParam(value = "redirect", required = false) String redirect,
+                               @RequestParam(value = "email", required = false) String email,
+                               Model model) {
         if (!model.containsAttribute("registerForm")) {
-            model.addAttribute("registerForm", new RegisterForm());
+            RegisterForm form = new RegisterForm();
+            form.setEmail(email);
+            model.addAttribute("registerForm", form);
         }
         model.addAttribute("redirect", safeRedirectOrDefault(redirect, "/account"));
         return "register";

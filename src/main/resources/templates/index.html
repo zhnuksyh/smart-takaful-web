@@ -1,252 +1,544 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-    <title>Muqmeen Group - Smart Takaful System</title>
+    <title>Muqmeen Group - Smart Takaful Consultation</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body x-data="bookingFlow()" x-init="initBooking()" class="text-slate-800 antialiased min-h-screen flex flex-col"
+<body x-data="bookingFlow()" x-init="initBooking()" class="bg-[#d8dde7] text-zinc-900 antialiased"
       th:attr="data-form-error=${formError},data-selected-product=${selectedProductName}">
 
-    <nav class="bg-white shadow-sm z-50 sticky top-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <a href="/" class="flex items-center">
-                    <i class="fa-solid fa-shield-halved text-yellow-500 text-2xl mr-2"></i>
-                    <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
+    <nav class="sticky top-0 z-50 border-b border-white/70 bg-white/90 backdrop-blur-xl">
+        <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <a href="/" class="flex items-center gap-3">
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950 text-yellow-300 shadow-premium">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </span>
+                <span class="leading-tight">
+                    <span class="block text-lg font-black tracking-tight text-zinc-950">Muqmeen</span>
+                    <span class="block text-sm font-extrabold tracking-tight text-yellow-500">Group</span>
+                </span>
+            </a>
+
+            <div class="hidden items-center gap-8 text-sm font-semibold text-zinc-600 lg:flex">
+                <a href="#home" class="hover:text-zinc-950">Home</a>
+                <a href="#products" class="hover:text-zinc-950">Products</a>
+                <a href="#reviews" class="hover:text-zinc-950">Reviews</a>
+                <a href="#faq" class="hover:text-zinc-950">FAQ</a>
+                <a href="#contact" class="hover:text-zinc-950">Contact</a>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a th:if="${customerSignedIn}" href="/account"
+                   class="hidden rounded-full px-4 py-2 text-sm font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
+                    Account
                 </a>
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">Home</a>
-                    <a th:if="${customerSignedIn}" href="/account" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
-                        <i class="fa-solid fa-user mr-1"></i> Account
-                    </a>
-                    <a th:unless="${customerSignedIn}" href="/login" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
-                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Login
-                    </a>
-                    <a href="/admin/dashboard" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
-                        <i class="fa-solid fa-lock mr-1"></i> Admin
-                    </a>
-                    <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post" class="inline">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button type="submit" class="text-slate-600 hover:text-yellow-500 font-medium px-3 py-2 rounded-md text-sm">
-                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-                        </button>
-                    </form>
-                </div>
+                <a th:unless="${customerSignedIn}" href="/login"
+                   class="hidden rounded-full px-4 py-2 text-sm font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
+                    Login
+                </a>
+                <a href="/admin/dashboard"
+                   class="hidden rounded-full px-4 py-2 text-sm font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 md:inline-flex">
+                    Admin
+                </a>
+                <a th:unless="${customerSignedIn}" href="/login"
+                   class="rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-black text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300">
+                    Instant Quote
+                </a>
+                <button th:if="${customerSignedIn}" type="button"
+                        @click="openBooking('General Takaful Consultation')"
+                        class="rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-black text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300">
+                    Instant Quote
+                </button>
+                <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post" class="hidden sm:block">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="rounded-full px-3 py-2 text-sm font-bold text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow flex flex-col relative overflow-y-auto">
+    <main class="overflow-hidden bg-[#f8f7f2]">
+        <section id="home" class="relative bg-[radial-gradient(circle_at_12%_12%,#fff7cc_0,#fff7cc_18%,transparent_38%),linear-gradient(110deg,#f8fbff_0%,#fffaf1_100%)]">
+            <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:pb-24 lg:pt-20">
+                <div>
+                    <p class="mb-5 inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-zinc-600 shadow-sm">
+                        <i class="fa-solid fa-star-of-life mr-2 text-yellow-500"></i>
+                        Smart Takaful Consultation
+                    </p>
+                    <h1 class="max-w-3xl text-5xl font-black leading-[0.95] tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl">
+                        Your Trusted Takaful Partner
+                    </h1>
+                    <p class="mt-6 max-w-xl text-base font-medium leading-8 text-zinc-600 sm:text-lg">
+                        Compare protection, Hibah, medical, and education planning with Muqmeen Group. Book a focused consultation and track every request from your account.
+                    </p>
 
-        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 pr-8">
-                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Secure Your Family's Future with Islamic Wealth Management</h1>
-                    <p class="text-lg text-slate-300 mb-8">Expert PruBSN consultation tailored to your needs. Fast, transparent, and completely Shariah-compliant.</p>
-                    <div class="flex space-x-4">
-                        <a href="#products" class="bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold py-3 px-6 rounded-lg shadow-lg smooth-transition">Explore Products</a>
-                    </div>
-                    <div class="flex items-center mt-10 space-x-6 text-sm font-medium text-slate-400">
-                        <div class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Authorized Agent</div>
-                        <div class="flex items-center"><i class="fa-solid fa-users text-blue-400 mr-2"></i> 500+ Clients</div>
-                    </div>
-                </div>
-                <div class="md:w-1/2 mt-10 md:mt-0 relative">
-                    <div class="absolute inset-0 bg-yellow-400 opacity-20 blur-3xl rounded-full"></div>
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800" alt="Professional Agent" class="rounded-2xl shadow-2xl relative z-10 border-4 border-white/10 object-cover h-96 w-full">
-                    <div class="absolute bottom-4 left-4 bg-white text-slate-800 p-4 rounded-xl shadow-xl z-20 flex items-center space-x-3">
-                        <div class="bg-green-100 p-2 rounded-full"><i class="fa-solid fa-star text-green-600"></i></div>
-                        <div>
-                            <p class="text-sm font-bold">Top Consultant 2023</p>
-                            <p class="text-xs text-slate-500">Muqmeen Group KB</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="products" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-slate-900">Select Your Takaful Interest</h2>
-                <p class="text-slate-500 mt-2">Choose a product below to schedule your personalized consultation.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div th:if="${#lists.isEmpty(products)}"
-                     class="md:col-span-3 text-center py-16 text-slate-400">
-                    <i class="fa-regular fa-folder-open text-3xl mb-3 block"></i>
-                    No products available right now. Please check back soon.
-                </div>
-
-                <div th:each="product : ${products}"
-                     class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
-                    <div th:classappend="${product.accentClass}"
-                         class="h-48 flex items-center justify-center relative overflow-hidden">
-                        <i th:class="|fa-solid ${product.iconClass} text-6xl group-hover:scale-110 smooth-transition|"></i>
-                        <div th:if="${product.featured}"
-                             class="absolute top-4 right-4 bg-yellow-400 text-zinc-950 text-xs font-bold px-3 py-1 rounded-full shadow-sm">Popular</div>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900 mb-2" th:text="${product.name}">Product</h3>
-                            <p class="text-slate-600 text-sm mb-4" th:text="${product.description}">Description</p>
-                        </div>
-                        <button th:if="${customerSignedIn}" type="button"
-                                th:data-product-name="${product.name}"
-                                @click="openBooking($el.dataset.productName || 'Consultation')"
-                                class="w-full bg-zinc-950 hover:bg-yellow-400 text-white hover:text-zinc-950 font-medium py-3 rounded-lg smooth-transition">
-                            I'm Interested
-                        </button>
-                        <a th:unless="${customerSignedIn}"
-                           th:href="@{/login(redirect=${'/?productId=' + product.id})}"
-                           class="block text-center w-full bg-zinc-950 hover:bg-yellow-400 text-white hover:text-zinc-950 font-medium py-3 rounded-lg smooth-transition">
-                            Sign in to Continue
+                    <div class="mt-8 flex w-full max-w-xl flex-col gap-3 rounded-full border border-zinc-200 bg-white p-2 shadow-[0_24px_80px_-48px_rgba(9,9,11,0.55)] sm:flex-row">
+                        <a th:unless="${customerSignedIn}" href="/register"
+                           class="flex-1 rounded-full px-5 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50">
+                            Create your customer account
                         </a>
+                        <button th:if="${customerSignedIn}" type="button"
+                                @click="openBooking('General Takaful Consultation')"
+                                class="flex-1 rounded-full px-5 py-3 text-left text-sm font-semibold text-zinc-500 hover:bg-zinc-50">
+                            Continue as <span th:text="${currentCustomer.fullName}">Customer</span>
+                        </button>
+                        <a th:unless="${customerSignedIn}" href="/register"
+                           class="rounded-full bg-zinc-950 px-6 py-3 text-center text-sm font-black text-white hover:bg-yellow-400 hover:text-zinc-950">
+                            Get A Quote
+                        </a>
+                        <button th:if="${customerSignedIn}" type="button"
+                                @click="openBooking('General Takaful Consultation')"
+                                class="rounded-full bg-zinc-950 px-6 py-3 text-center text-sm font-black text-white hover:bg-yellow-400 hover:text-zinc-950">
+                            Get A Quote
+                        </button>
                     </div>
+
+                    <div class="mt-10 grid max-w-xl grid-cols-3 gap-4 text-sm font-bold text-zinc-600">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-yellow-500"></i> Licensed Advice</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-yellow-500"></i> Fast Follow-Up</div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-lock text-yellow-500"></i> Private History</div>
+                    </div>
+                </div>
+
+                <div class="relative min-h-[28rem]">
+                    <div class="absolute -left-6 top-16 z-20 rounded-[2rem] border border-white/80 bg-white p-5 shadow-premium">
+                        <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-400 text-zinc-950">
+                            <i class="fa-solid fa-headset text-2xl"></i>
+                        </div>
+                        <p class="text-4xl font-black leading-none text-zinc-950">24/7</p>
+                        <p class="mt-1 text-xs font-extrabold text-zinc-500">Guide Support</p>
+                    </div>
+                    <div class="absolute -right-3 bottom-8 z-20 rounded-[2rem] border border-zinc-100 bg-zinc-950 p-5 text-white shadow-premium">
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-yellow-300">Optional Tips</p>
+                        <p class="mt-2 text-2xl font-black">ToyyibPay Ready</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=85&w=1100"
+                         alt="Muqmeen Group consultation"
+                         class="relative ml-auto h-[30rem] w-full rounded-[2.5rem] object-cover object-center shadow-[0_34px_120px_-65px_rgba(9,9,11,0.8)] lg:w-[90%]">
                 </div>
             </div>
-        </div>
 
-        <div id="booking-modal" x-cloak x-show="bookingOpen" @click.self="closeBooking()"
-             class="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col relative">
-                <button type="button" @click="closeBooking()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+            <div class="relative z-30 mx-auto -mb-8 max-w-3xl px-4">
+                <div class="flex items-center justify-between gap-2 rounded-full border border-white/80 bg-white/90 p-2 shadow-premium backdrop-blur-xl">
+                    <a href="#home" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-black text-zinc-900">
+                        <i class="fa-solid fa-house"></i><span class="hidden sm:inline">Home</span>
+                    </a>
+                    <a href="#products" class="flex flex-1 items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-sm font-black text-zinc-950 shadow-sm">
+                        <i class="fa-solid fa-shield-halved"></i><span class="hidden sm:inline">Takaful</span>
+                    </a>
+                    <a href="#products" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-black text-zinc-900">
+                        <i class="fa-solid fa-hand-holding-dollar"></i><span class="hidden sm:inline">Hibah</span>
+                    </a>
+                    <a href="#faq" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-black text-zinc-900">
+                        <i class="fa-solid fa-circle-question"></i><span class="hidden sm:inline">FAQ</span>
+                    </a>
+                </div>
+            </div>
+        </section>
 
-                <div class="p-6 border-b border-slate-100">
-                    <h2 class="text-2xl font-bold text-slate-900">Book Consultation</h2>
-                    <p class="text-sm text-slate-500">Selected: <span id="modal-product-name" class="font-semibold text-yellow-500" x-text="selectedProduct || 'Product'">Product</span></p>
+        <section class="bg-white pt-20">
+            <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 text-center text-sm font-black uppercase tracking-[0.12em] text-zinc-300 sm:grid-cols-3 sm:px-6 lg:grid-cols-5 lg:px-8">
+                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-building"></i> Muqmeen</div>
+                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-moon"></i> Shariah</div>
+                <div class="flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</div>
+                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+                <div class="col-span-2 flex items-center justify-center gap-2 sm:col-span-1"><i class="fa-solid fa-credit-card"></i> ToyyibPay</div>
+            </div>
+        </section>
+
+        <section id="products" class="relative bg-zinc-100 py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto mb-12 max-w-2xl text-center">
+                    <p class="text-sm font-black uppercase tracking-[0.22em] text-yellow-600">Our Takaful Package</p>
+                    <h2 class="mt-3 text-4xl font-black tracking-tight text-zinc-950">Protection plans built around your family</h2>
+                    <p class="mt-3 text-sm font-medium leading-6 text-zinc-500">Choose the product that matches your concern and start a guided consultation with Muqmeen Group.</p>
                 </div>
 
-                <div class="p-6 overflow-y-auto">
-                    <div th:if="${formError}"
-                         class="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700">
-                        <p class="font-semibold mb-1">
-                            <i class="fa-solid fa-circle-exclamation mr-1"></i>
-                            Please fix the highlighted fields below.
-                        </p>
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+                    <div th:if="${#lists.isEmpty(products)}"
+                         class="md:col-span-2 xl:col-span-4 rounded-[2rem] border border-dashed border-zinc-300 bg-white px-6 py-16 text-center text-zinc-400">
+                        <i class="fa-regular fa-folder-open mb-3 block text-3xl"></i>
+                        No products available right now. Please check back soon.
                     </div>
 
-                    <form id="consultation-form" th:action="@{/submit-lead}" th:object="${lead}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="productType" id="productType" th:field="*{productType}" x-model="selectedProduct">
-
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-yellow-500">*</span></label>
-                                <input type="text" name="fullName" th:field="*{fullName}" required
-                                       th:classappend="${#fields.hasErrors('fullName')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-slate-300 focus:ring-yellow-400'"
-                                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:border-yellow-400 outline-none">
-                                <p th:if="${#fields.hasErrors('fullName')}"
-                                   th:errors="*{fullName}"
-                                   class="text-xs text-yellow-500 mt-1">Name error</p>
+                    <article th:each="product, iter : ${products}"
+                             class="group flex min-h-[20rem] flex-col justify-between rounded-[2rem] border border-zinc-100 bg-white p-7 text-center shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)] transition duration-300 hover:-translate-y-1 hover:shadow-premium"
+                             th:classappend="${product.featured} ? ' ring-2 ring-yellow-400' : ''">
+                        <div>
+                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 group-hover:bg-yellow-400">
+                                <i th:class="|fa-solid ${product.iconClass} text-2xl|"></i>
                             </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">WhatsApp Number <span class="text-yellow-500">*</span></label>
-                                <div class="flex">
-                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-50 text-slate-500 sm:text-sm">+60</span>
-                                    <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" placeholder="123456789" required
-                                           th:classappend="${#fields.hasErrors('phoneNumber')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-slate-300 focus:ring-yellow-400'"
-                                           class="flex-1 min-w-0 block w-full px-4 py-2 rounded-none rounded-r-lg border focus:ring-2 focus:border-yellow-400 outline-none">
-                                </div>
-                                <p th:if="${#fields.hasErrors('phoneNumber')}"
-                                   th:errors="*{phoneNumber}"
-                                   class="text-xs text-yellow-500 mt-1">Phone error</p>
-                                <p th:unless="${#fields.hasErrors('phoneNumber')}"
-                                   class="text-xs text-slate-400 mt-1">Enter your WhatsApp number, e.g. 0123456789 or 60123456789.</p>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Consultation Mode <span class="text-yellow-500">*</span></label>
-                                <select name="consultationMode" th:field="*{consultationMode}" required
-                                        th:classappend="${#fields.hasErrors('consultationMode')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-slate-300 focus:ring-yellow-400'"
-                                        class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:border-yellow-400 outline-none">
-                                    <option value="WhatsApp">WhatsApp Text (Quick)</option>
-                                    <option value="Voice/Video Call">Voice/Video Call</option>
-                                    <option value="Face-to-Face">Face-to-Face Meeting (Klang Valley)</option>
-                                </select>
-                                <p th:if="${#fields.hasErrors('consultationMode')}"
-                                   th:errors="*{consultationMode}"
-                                   class="text-xs text-yellow-500 mt-1">Mode error</p>
-                            </div>
-
-                            <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
-                                <label class="block text-sm font-bold text-slate-800 mb-2">
-                                    <i class="fa-solid fa-mug-hot text-amber-600 mr-2"></i>Support Agent's Coffee (Optional Tip)
-                                </label>
-                                <p class="text-xs text-slate-500 mb-3">Consultations are free. If you appreciate the value provided, you can leave an optional tip.</p>
-
-                                <div class="flex space-x-2 mb-3">
-                                    <button type="button" @click="selectedTip = '0'"
-                                            :class="selectedTip === '0' ? 'border-yellow-400 bg-yellow-50 text-yellow-700 font-medium' : 'border-slate-300 bg-white hover:bg-slate-100'"
-                                            class="tip-btn flex-1 py-2 border rounded text-sm">Skip (RM 0)</button>
-                                    <button type="button" @click="selectedTip = '5'"
-                                            :class="selectedTip === '5' ? 'border-yellow-400 bg-yellow-50 text-yellow-700 font-medium' : 'border-slate-300 bg-white hover:bg-slate-100'"
-                                            class="tip-btn flex-1 py-2 border rounded text-sm">RM 5</button>
-                                    <button type="button" @click="selectedTip = '10'"
-                                            :class="selectedTip === '10' ? 'border-yellow-400 bg-yellow-50 text-yellow-700 font-medium' : 'border-slate-300 bg-white hover:bg-slate-100'"
-                                            class="tip-btn flex-1 py-2 border rounded text-sm">RM 10</button>
-                                    <button type="button" @click="selectedTip = '50'"
-                                            :class="selectedTip === '50' ? 'border-yellow-400 bg-yellow-50 text-yellow-700 font-medium' : 'border-slate-300 bg-white hover:bg-slate-100'"
-                                            class="tip-btn flex-1 py-2 border rounded text-sm">RM 50</button>
-                                </div>
-                                <input type="hidden" name="tipAmount" th:field="*{tipAmount}" x-model="selectedTip">
-                            </div>
+                            <p th:if="${product.featured}" class="mx-auto mt-5 w-fit rounded-full bg-yellow-100 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-yellow-700">Popular</p>
+                            <h3 class="mt-5 text-xl font-black text-zinc-950" th:text="${product.name}">Product</h3>
+                            <p class="mt-3 text-sm font-medium leading-6 text-zinc-500" th:text="${product.description}">Description</p>
                         </div>
-
-                        <div class="mt-8">
-                            <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold py-3 px-4 rounded-lg shadow-md smooth-transition flex items-center justify-center">
-                                Proceed &amp; Submit <i class="fa-solid fa-arrow-right ml-2"></i>
+                        <div class="mt-7">
+                            <button th:if="${customerSignedIn}" type="button"
+                                    th:data-product-name="${product.name}"
+                                    @click="openBooking($el.dataset.productName || 'Consultation')"
+                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-black text-white hover:bg-yellow-400 hover:text-zinc-950">
+                                I'm Interested <i class="fa-solid fa-arrow-right"></i>
                             </button>
+                            <a th:unless="${customerSignedIn}"
+                               th:href="@{/login(redirect=${'/?productId=' + product.id})}"
+                               class="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-black text-white hover:bg-yellow-400 hover:text-zinc-950">
+                                Sign in to Continue <i class="fa-solid fa-arrow-right"></i>
+                            </a>
                         </div>
-                    </form>
+                    </article>
+
+                    <article class="flex min-h-[20rem] flex-col justify-between rounded-[2rem] border border-zinc-100 bg-white p-7 text-center shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)] transition duration-300 hover:-translate-y-1 hover:shadow-premium">
+                        <div>
+                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-950 text-yellow-300">
+                                <i class="fa-solid fa-sliders text-2xl"></i>
+                            </div>
+                            <h3 class="mt-5 text-xl font-black text-zinc-950">Custom Family Review</h3>
+                            <p class="mt-3 text-sm font-medium leading-6 text-zinc-500">Build your own planning path around protection, Hibah, medical needs, and education goals.</p>
+                        </div>
+                        <div class="mt-7">
+                            <button th:if="${customerSignedIn}" type="button"
+                                    @click="openBooking('Custom Family Takaful Review')"
+                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-black text-zinc-950 hover:bg-yellow-300">
+                                Learn More <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <a th:unless="${customerSignedIn}" href="/login"
+                               class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-black text-zinc-950 hover:bg-yellow-300">
+                                Learn More <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
                 </div>
             </div>
-        </div>
+        </section>
 
+        <section id="reviews" class="bg-white py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+                    <div>
+                        <p class="text-sm font-black uppercase tracking-[0.22em] text-yellow-600">Our Client Reviews</p>
+                        <h2 class="mt-3 text-4xl font-black tracking-tight text-zinc-950">Families choose clarity first</h2>
+                        <p class="mt-3 max-w-xl text-sm font-medium leading-6 text-zinc-500">Honest consultation, practical next steps, and transparent follow-up from account to payment status.</p>
+                    </div>
+                    <div class="hidden gap-3 sm:flex">
+                        <span class="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-200 text-zinc-400"><i class="fa-solid fa-arrow-left"></i></span>
+                        <span class="flex h-11 w-11 items-center justify-center rounded-full bg-yellow-400 text-zinc-950"><i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <article class="rounded-[1.5rem] border border-zinc-100 bg-white p-6 shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-yellow-100 font-black text-yellow-700">A</div>
+                            <div>
+                                <p class="text-sm font-black text-zinc-950">Aiman Hakim</p>
+                                <p class="text-xs font-semibold text-zinc-400">Young family planning</p>
+                            </div>
+                        </div>
+                        <p class="mt-5 text-sm font-medium leading-6 text-zinc-600">Muqmeen helped me understand medical and Hibah options without pressure. The follow-up was fast and clear.</p>
+                        <p class="mt-4 text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    </article>
+                    <article class="rounded-[1.5rem] border border-zinc-100 bg-white p-6 shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-100 font-black text-zinc-700">N</div>
+                            <div>
+                                <p class="text-sm font-black text-zinc-950">Nur Afiqah</p>
+                                <p class="text-xs font-semibold text-zinc-400">Education goal review</p>
+                            </div>
+                        </div>
+                        <p class="mt-5 text-sm font-medium leading-6 text-zinc-600">The consultation made the options easy to compare. I liked being able to see my request history afterwards.</p>
+                        <p class="mt-4 text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    </article>
+                    <article class="rounded-[1.5rem] border border-zinc-100 bg-white p-6 shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-yellow-100 font-black text-yellow-700">S</div>
+                            <div>
+                                <p class="text-sm font-black text-zinc-950">Sarah Ismail</p>
+                                <p class="text-xs font-semibold text-zinc-400">Hibah consultation</p>
+                            </div>
+                        </div>
+                        <p class="mt-5 text-sm font-medium leading-6 text-zinc-600">The advisor explained inheritance concerns in plain language and gave me a practical starting point.</p>
+                        <p class="mt-4 text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    </article>
+                    <article class="rounded-[1.5rem] border border-zinc-100 bg-white p-6 shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-100 font-black text-zinc-700">F</div>
+                            <div>
+                                <p class="text-sm font-black text-zinc-950">Farhan Rahman</p>
+                                <p class="text-xs font-semibold text-zinc-400">Medical protection</p>
+                            </div>
+                        </div>
+                        <p class="mt-5 text-sm font-medium leading-6 text-zinc-600">The process was quick, and the optional tip payment felt simple. Everything stayed organized in my account.</p>
+                        <p class="mt-4 text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="relative bg-[linear-gradient(135deg,#fffaf1_0%,#f5f8ff_100%)] py-24">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-10 text-center">
+                    <p class="text-sm font-black uppercase tracking-[0.22em] text-yellow-600">Frequently Asked Questions</p>
+                    <h2 class="mt-3 text-4xl font-black tracking-tight text-zinc-950">Answers before your consultation</h2>
+                </div>
+
+                <div x-data="{ openFaq: 0 }" class="space-y-4">
+                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 0 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
+                        <button type="button" @click="openFaq = openFaq === 0 ? -1 : 0" class="flex w-full items-center justify-between gap-4 text-left text-sm font-black text-zinc-950">
+                            What types of Takaful consultation does Muqmeen offer?
+                            <i class="fa-solid" :class="openFaq === 0 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <p x-show="openFaq === 0" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
+                            We focus on medical protection, Hibah planning, education protection, family income needs, and custom reviews that help you compare available products.
+                        </p>
+                    </article>
+                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 1 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
+                        <button type="button" @click="openFaq = openFaq === 1 ? -1 : 1" class="flex w-full items-center justify-between gap-4 text-left text-sm font-black text-zinc-950">
+                            Do I need an account to submit a consultation?
+                            <i class="fa-solid" :class="openFaq === 1 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <p x-show="openFaq === 1" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
+                            Yes. Browsing is public, but an account keeps your consultation history, payment status, and follow-up details private.
+                        </p>
+                    </article>
+                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 2 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
+                        <button type="button" @click="openFaq = openFaq === 2 ? -1 : 2" class="flex w-full items-center justify-between gap-4 text-left text-sm font-black text-zinc-950">
+                            Are consultations free?
+                            <i class="fa-solid" :class="openFaq === 2 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <p x-show="openFaq === 2" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
+                            Yes. Consultations are free. Tips are optional and use ToyyibPay when you choose to support the advisor.
+                        </p>
+                    </article>
+                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 3 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
+                        <button type="button" @click="openFaq = openFaq === 3 ? -1 : 3" class="flex w-full items-center justify-between gap-4 text-left text-sm font-black text-zinc-950">
+                            How fast will a consultant contact me?
+                            <i class="fa-solid" :class="openFaq === 3 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <p x-show="openFaq === 3" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
+                            The admin dashboard highlights new leads immediately, so an advisor can follow up by your selected mode as soon as possible.
+                        </p>
+                    </article>
+                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 4 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
+                        <button type="button" @click="openFaq = openFaq === 4 ? -1 : 4" class="flex w-full items-center justify-between gap-4 text-left text-sm font-black text-zinc-950">
+                            Can I track my past product interests?
+                            <i class="fa-solid" :class="openFaq === 4 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <p x-show="openFaq === 4" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
+                            Yes. Your account shows product interest, consultation mode, submitted date, lead status, tip amount, and payment status.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="bg-white px-4 pb-0 pt-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-5xl translate-y-12 rounded-[2rem] bg-zinc-950 p-8 text-white shadow-[0_34px_110px_-58px_rgba(9,9,11,0.95)] sm:p-10">
+                <div class="mb-8 text-center">
+                    <h2 class="text-3xl font-black tracking-tight sm:text-4xl">Get A Free Consultation Now</h2>
+                    <p class="mt-2 text-sm font-medium text-zinc-300">Start your Muqmeen Group Takaful review with a simple, focused request.</p>
+                </div>
+
+                <form th:if="${customerSignedIn}" th:action="@{/submit-lead}" method="post" class="grid gap-4 md:grid-cols-2">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="productType" value="General Takaful Consultation">
+                    <input type="hidden" name="tipAmount" value="0">
+                    <label class="text-sm font-bold text-zinc-200">
+                        Name
+                        <input type="text" name="fullName" required th:value="${currentCustomer.fullName}"
+                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                    </label>
+                    <label class="text-sm font-bold text-zinc-200">
+                        WhatsApp
+                        <input type="tel" name="phoneNumber" required th:value="${currentCustomer.phoneNumber}"
+                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                    </label>
+                    <label class="text-sm font-bold text-zinc-200">
+                        Mode
+                        <select name="consultationMode"
+                                class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                            <option value="WhatsApp">WhatsApp Text</option>
+                            <option value="Voice/Video Call">Voice/Video Call</option>
+                            <option value="Face-to-Face">Face-to-Face Meeting</option>
+                        </select>
+                    </label>
+                    <button type="submit" class="mt-7 rounded-full bg-yellow-400 px-6 py-3 text-sm font-black text-zinc-950 hover:bg-yellow-300">
+                        Submit Consultation
+                    </button>
+                </form>
+
+                <form th:unless="${customerSignedIn}" th:action="@{/register}" method="get" class="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                    <input type="hidden" name="redirect" value="/#products">
+                    <label class="text-sm font-bold text-zinc-200 md:col-span-2">
+                        Email
+                        <input type="email" name="email" placeholder="Enter your email"
+                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                    </label>
+                    <button type="submit" class="rounded-full bg-yellow-400 px-8 py-3 text-sm font-black text-zinc-950 hover:bg-yellow-300">
+                        Start
+                    </button>
+                </form>
+            </div>
+        </section>
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 text-center text-xs py-4">
-        &copy; 2026 Muqmeen Group. Smart Takaful &amp; Consultation System.
+    <footer class="bg-zinc-950 px-4 pb-8 pt-24 text-zinc-400 sm:px-6 lg:px-8">
+        <div class="mx-auto grid max-w-7xl gap-10 border-b border-white/10 pb-10 md:grid-cols-[1.2fr_1fr_1fr]">
+            <div>
+                <a href="/" class="flex items-center gap-3">
+                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-zinc-950">
+                        <i class="fa-solid fa-shield-halved text-xl"></i>
+                    </span>
+                    <span class="leading-tight">
+                        <span class="block text-lg font-black tracking-tight text-white">Muqmeen</span>
+                        <span class="block text-sm font-extrabold tracking-tight text-yellow-300">Group</span>
+                    </span>
+                </a>
+                <p class="mt-5 max-w-sm text-sm font-medium leading-7">Smart Takaful consultation for families who want protection, clarity, and accountable follow-up.</p>
+            </div>
+            <div>
+                <p class="mb-4 text-sm font-black uppercase tracking-[0.16em] text-white">Social</p>
+                <div class="grid gap-3 text-sm font-semibold">
+                    <a href="#" class="hover:text-yellow-300"><i class="fa-brands fa-facebook mr-2"></i>Facebook</a>
+                    <a href="#" class="hover:text-yellow-300"><i class="fa-brands fa-linkedin mr-2"></i>LinkedIn</a>
+                    <a href="#" class="hover:text-yellow-300"><i class="fa-brands fa-youtube mr-2"></i>YouTube</a>
+                </div>
+            </div>
+            <div>
+                <p class="mb-4 text-sm font-black uppercase tracking-[0.16em] text-white">Useful Links</p>
+                <div class="grid gap-3 text-sm font-semibold">
+                    <a href="#products" class="hover:text-yellow-300">Products</a>
+                    <a href="#faq" class="hover:text-yellow-300">FAQ</a>
+                    <a href="/account" class="hover:text-yellow-300">Account</a>
+                    <a href="/admin/dashboard" class="hover:text-yellow-300">Admin</a>
+                </div>
+            </div>
+        </div>
+        <p class="mx-auto mt-8 max-w-7xl text-center text-xs font-semibold">Copyright 2026. All rights reserved.</p>
     </footer>
 
+    <div id="booking-modal" x-cloak x-show="bookingOpen" @click.self="closeBooking()"
+         class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-sm">
+        <div class="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-[2rem] bg-white shadow-2xl">
+            <button type="button" @click="closeBooking()" class="absolute right-5 top-5 text-zinc-400 hover:text-zinc-950">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="border-b border-zinc-100 p-7">
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-yellow-600">Muqmeen Consultation</p>
+                <h2 class="mt-2 text-3xl font-black text-zinc-950">Book Consultation</h2>
+                <p class="mt-2 text-sm text-zinc-500">Selected: <span id="modal-product-name" class="font-black text-zinc-950" x-text="selectedProduct || 'Product'">Product</span></p>
+            </div>
+
+            <div class="overflow-y-auto p-7">
+                <div th:if="${formError}"
+                     class="mb-4 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700">
+                    <p class="font-semibold">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                        Please fix the highlighted fields below.
+                    </p>
+                </div>
+
+                <form id="consultation-form" th:action="@{/submit-lead}" th:object="${lead}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="productType" id="productType" th:field="*{productType}" x-model="selectedProduct">
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="mb-1 block text-sm font-bold text-zinc-700">Full Name <span class="text-yellow-500">*</span></label>
+                            <input type="text" name="fullName" th:field="*{fullName}" required
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
+                                   class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
+                            <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="mt-1 text-xs text-yellow-600">Name error</p>
+                        </div>
+
+                        <div>
+                            <label class="mb-1 block text-sm font-bold text-zinc-700">WhatsApp Number <span class="text-yellow-500">*</span></label>
+                            <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" placeholder="60123456789" required
+                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
+                                   class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
+                            <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="mt-1 text-xs text-yellow-600">Phone error</p>
+                        </div>
+
+                        <div>
+                            <label class="mb-1 block text-sm font-bold text-zinc-700">Consultation Mode <span class="text-yellow-500">*</span></label>
+                            <select name="consultationMode" th:field="*{consultationMode}" required
+                                    th:classappend="${#fields.hasErrors('consultationMode')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
+                                    class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
+                                <option value="WhatsApp">WhatsApp Text</option>
+                                <option value="Voice/Video Call">Voice/Video Call</option>
+                                <option value="Face-to-Face">Face-to-Face Meeting</option>
+                            </select>
+                            <p th:if="${#fields.hasErrors('consultationMode')}" th:errors="*{consultationMode}" class="mt-1 text-xs text-yellow-600">Mode error</p>
+                        </div>
+
+                        <div class="rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+                            <label class="mb-3 block text-sm font-black text-zinc-950">
+                                <i class="fa-solid fa-mug-hot mr-2 text-yellow-500"></i>Optional Tip
+                            </label>
+
+                            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                <button type="button" @click="selectedTip = '0'"
+                                        :class="selectedTip === '0' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
+                                        class="rounded-full border px-3 py-2 text-sm font-black">RM 0</button>
+                                <button type="button" @click="selectedTip = '5'"
+                                        :class="selectedTip === '5' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
+                                        class="rounded-full border px-3 py-2 text-sm font-black">RM 5</button>
+                                <button type="button" @click="selectedTip = '10'"
+                                        :class="selectedTip === '10' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
+                                        class="rounded-full border px-3 py-2 text-sm font-black">RM 10</button>
+                                <button type="button" @click="selectedTip = '50'"
+                                        :class="selectedTip === '50' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
+                                        class="rounded-full border px-3 py-2 text-sm font-black">RM 50</button>
+                            </div>
+                            <input type="hidden" name="tipAmount" th:field="*{tipAmount}" x-model="selectedTip">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-black text-zinc-950 hover:bg-yellow-300">
+                        Proceed &amp; Submit <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <button id="chat-toggle" type="button" aria-label="Open chat assistant"
-            class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-yellow-400 hover:bg-yellow-300 text-zinc-950 shadow-lg flex items-center justify-center smooth-transition">
+            class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 shadow-lg hover:bg-yellow-300">
         <i class="fa-solid fa-comments text-xl"></i>
     </button>
 
     <div id="chat-panel"
-         class="fixed bottom-24 right-6 z-50 w-80 max-w-[calc(100vw-3rem)] h-[28rem] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 hidden flex-col overflow-hidden">
-        <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+         class="fixed bottom-24 right-6 z-50 hidden h-[28rem] max-h-[calc(100vh-8rem)] w-80 max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-2xl">
+        <div class="flex items-center justify-between bg-zinc-950 px-4 py-3 text-white">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved text-yellow-300"></i>
                 <div>
-                    <p class="text-sm font-semibold leading-tight">Takaful Assistant</p>
-                    <p class="text-xs text-slate-300 leading-tight">Ask about our products</p>
+                    <p class="text-sm font-black leading-tight">Takaful Assistant</p>
+                    <p class="text-xs text-zinc-300 leading-tight">Ask about our products</p>
                 </div>
             </div>
-            <button type="button" id="chat-close" class="text-slate-300 hover:text-white" aria-label="Close chat">
+            <button type="button" id="chat-close" class="text-zinc-300 hover:text-white" aria-label="Close chat">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm bg-slate-50"></div>
-        <form id="chat-form" class="border-t border-slate-200 p-3 flex items-end gap-2 bg-white">
+        <div id="chat-messages" class="flex-1 space-y-3 overflow-y-auto bg-zinc-50 p-4 text-sm"></div>
+        <form id="chat-form" class="flex items-end gap-2 border-t border-zinc-200 bg-white p-3">
             <textarea id="chat-input" rows="1" maxlength="500" required
                       placeholder="Ask about Takaful, Hibah, our products..."
-                      class="flex-1 resize-none border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none"></textarea>
+                      class="flex-1 resize-none rounded-xl border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400"></textarea>
             <button id="chat-send" type="submit"
-                    class="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-950 rounded-lg px-3 py-2 text-sm font-semibold smooth-transition">
+                    class="rounded-xl bg-yellow-400 px-3 py-2 text-sm font-black text-zinc-950 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
@@ -286,8 +578,8 @@
                 wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
                 const bubble = document.createElement('div');
                 bubble.className = role === 'user'
-                    ? 'max-w-[80%] bg-yellow-400 text-zinc-950 rounded-2xl rounded-br-sm px-3 py-2 whitespace-pre-wrap break-words'
-                    : 'max-w-[80%] bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm px-3 py-2 whitespace-pre-wrap break-words';
+                    ? 'max-w-[80%] rounded-2xl rounded-br-sm bg-yellow-400 px-3 py-2 text-zinc-950 whitespace-pre-wrap break-words'
+                    : 'max-w-[80%] rounded-2xl rounded-bl-sm border border-zinc-200 bg-white px-3 py-2 text-zinc-800 whitespace-pre-wrap break-words';
                 bubble.textContent = text;
                 wrap.appendChild(bubble);
                 messages.appendChild(wrap);
@@ -300,8 +592,8 @@
                 wrap.className = 'flex justify-start';
                 wrap.id = 'chat-typing';
                 const bubble = document.createElement('div');
-                bubble.className = 'bg-white border border-slate-200 text-slate-400 rounded-2xl rounded-bl-sm px-3 py-2 italic';
-                bubble.textContent = 'Typing…';
+                bubble.className = 'rounded-2xl rounded-bl-sm border border-zinc-200 bg-white px-3 py-2 text-zinc-400 italic';
+                bubble.textContent = 'Typing...';
                 wrap.appendChild(bubble);
                 messages.appendChild(wrap);
                 messages.scrollTop = messages.scrollHeight;
