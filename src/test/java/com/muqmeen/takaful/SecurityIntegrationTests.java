@@ -82,11 +82,11 @@ class SecurityIntegrationTests {
                         .with(csrf())
                         .param("fullName", "Aminah")
                         .param("phoneNumber", "60123456789")
-                        .param("productType", "Hibah Al-Wasiyyah")
-                        .param("consultationMode", "WhatsApp")
-                        .param("tipAmount", "0"))
+                .param("productType", "Hibah Al-Wasiyyah")
+                .param("consultationMode", "WhatsApp")
+                .param("tipAmount", "0"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
@@ -174,11 +174,11 @@ class SecurityIntegrationTests {
 
         mockMvc.perform(get("/admin"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/admin/login"));
 
         mockMvc.perform(get("/admin/dashboard"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/admin/login"));
 
         mockMvc.perform(get("/admin").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isForbidden());
@@ -213,6 +213,25 @@ class SecurityIntegrationTests {
 
     @Test
     void adminLoginPageDoesNotOfferCustomerRegistration() throws Exception {
+        mockMvc.perform(get("/admin/login"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Admin sign in")))
+                .andExpect(content().string(not(containsString("Create an account"))));
+    }
+
+    @Test
+    void failedAdminLoginReturnsToAdminLoginPage() throws Exception {
+        mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", "admin")
+                        .param("password", "wrong-password")
+                        .param("redirect", "/admin/dashboard"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/login?error"));
+    }
+
+    @Test
+    void customerLoginPageStaysCustomerEvenAfterAdminRouteAttempt() throws Exception {
         MvcResult result = mockMvc.perform(get("/admin"))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
@@ -220,8 +239,9 @@ class SecurityIntegrationTests {
 
         mockMvc.perform(get("/login").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Admin sign in")))
-                .andExpect(content().string(not(containsString("Create an account"))));
+                .andExpect(content().string(containsString("Welcome back")))
+                .andExpect(content().string(containsString("Create an account")))
+                .andExpect(content().string(not(containsString("Admin sign in"))));
     }
 
     @Test

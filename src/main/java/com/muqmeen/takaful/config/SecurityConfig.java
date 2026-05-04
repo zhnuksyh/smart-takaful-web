@@ -25,7 +25,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/login", "/register", "/success", "/payment/**", "/api/chat", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/login", "/admin/login", "/register", "/success", "/payment/**", "/api/chat", "/error", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/submit-lead").hasRole("USER")
                         .requestMatchers("/account/**").hasRole("USER")
                         .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
@@ -35,7 +35,19 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .successHandler(authenticationSuccessHandler())
+                        .failureHandler((request, response, exception) -> {
+                            String redirect = request.getParameter("redirect");
+                            String loginPath = isSafeAdminRedirect(redirect) ? "/admin/login?error" : "/login?error";
+                            response.sendRedirect(request.getContextPath() + loginPath);
+                        })
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String path = request.getRequestURI().substring(request.getContextPath().length());
+                            String loginPath = isAdminPath(path) ? "/admin/login" : "/login";
+                            response.sendRedirect(request.getContextPath() + loginPath);
+                        })
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
@@ -124,5 +136,9 @@ public class SecurityConfig {
 
     private boolean isSafeUserRedirect(String redirect) {
         return isSafeRedirect(redirect) && !"/admin".equals(redirect) && !redirect.startsWith("/admin/");
+    }
+
+    private boolean isAdminPath(String path) {
+        return "/admin".equals(path) || path.startsWith("/admin/");
     }
 }

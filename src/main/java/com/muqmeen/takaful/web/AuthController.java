@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,12 +22,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URI;
-
 @Controller
 public class AuthController {
-
-    private static final String SAVED_REQUEST_ATTRIBUTE = "SPRING_SECURITY_SAVED_REQUEST";
 
     private final CustomerService customerService;
     private final UserDetailsService userDetailsService;
@@ -40,12 +35,16 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "redirect", required = false) String redirect,
-                        @RequestParam(value = "admin", defaultValue = "false") boolean admin,
-                        HttpServletRequest request,
                         Model model) {
-        boolean adminLogin = admin || isAdminRedirect(redirect) || isSavedAdminRequest(request);
-        model.addAttribute("adminLogin", adminLogin);
-        model.addAttribute("redirect", safeRedirectOrDefault(redirect, adminLogin ? "/admin/dashboard" : "/account"));
+        model.addAttribute("adminLogin", false);
+        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
+        return "login";
+    }
+
+    @GetMapping("/admin/login")
+    public String adminLogin(@RequestParam(value = "redirect", required = false) String redirect, Model model) {
+        model.addAttribute("adminLogin", true);
+        model.addAttribute("redirect", safeAdminRedirectOrDefault(redirect, "/admin/dashboard"));
         return "login";
     }
 
@@ -58,7 +57,7 @@ public class AuthController {
             form.setEmail(email);
             model.addAttribute("registerForm", form);
         }
-        model.addAttribute("redirect", safeRedirectOrDefault(redirect, "/account"));
+        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
         return "register";
     }
 
@@ -69,17 +68,17 @@ public class AuthController {
                            Model model,
                            HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("redirect", safeRedirectOrDefault(redirect, "/account"));
+            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
             return "register";
         }
 
         try {
             Customer customer = customerService.register(form.fullName, form.email, form.phoneNumber, form.password);
             authenticate(customer, request);
-            return "redirect:" + safeRedirectOrDefault(redirect, "/account");
+            return "redirect:" + safeUserRedirectOrDefault(redirect, "/account");
         } catch (CustomerService.DuplicateCustomerException ex) {
             bindingResult.rejectValue("email", "duplicate", ex.getMessage());
-            model.addAttribute("redirect", safeRedirectOrDefault(redirect, "/account"));
+            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
             return "register";
         }
     }
@@ -98,37 +97,26 @@ public class AuthController {
         request.getSession(true).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 
-    private String safeRedirectOrDefault(String redirect, String fallback) {
-        if (redirect != null && redirect.startsWith("/") && !redirect.startsWith("//")) {
+    private String safeUserRedirectOrDefault(String redirect, String fallback) {
+        if (isSafeRedirect(redirect) && !isAdminRedirect(redirect)) {
             return redirect;
         }
         return fallback;
     }
 
-    private boolean isSavedAdminRequest(HttpServletRequest request) {
-        if (request.getSession(false) == null) {
-            return false;
+    private String safeAdminRedirectOrDefault(String redirect, String fallback) {
+        if (isSafeRedirect(redirect) && isAdminRedirect(redirect)) {
+            return redirect;
         }
-        Object saved = request.getSession(false).getAttribute(SAVED_REQUEST_ATTRIBUTE);
-        if (saved instanceof SavedRequest savedRequest) {
-            return isAdminRedirect(savedRequest.getRedirectUrl());
-        }
-        return false;
+        return fallback;
+    }
+
+    private boolean isSafeRedirect(String redirect) {
+        return redirect != null && redirect.startsWith("/") && !redirect.startsWith("//");
     }
 
     private boolean isAdminRedirect(String redirect) {
-        if (redirect == null || redirect.isBlank()) {
-            return false;
-        }
-        if (redirect.startsWith("/")) {
-            return "/admin".equals(redirect) || redirect.startsWith("/admin/");
-        }
-        try {
-            String path = URI.create(redirect).getPath();
-            return "/admin".equals(path) || path.startsWith("/admin/");
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
+        return "/admin".equals(redirect) || redirect.startsWith("/admin/");
     }
 
     public static class RegisterForm {
