@@ -31,6 +31,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,7 +66,8 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Sign in to Continue")))
-                .andExpect(content().string(containsString("/login?redirect=")));
+                .andExpect(content().string(containsString("/login?redirect=")))
+                .andExpect(content().string(not(containsString("/admin"))));
 
         mockMvc.perform(get("/success"))
                 .andExpect(status().isOk());
@@ -170,9 +172,16 @@ class SecurityIntegrationTests {
     void adminPagesRedirectAnonymousUsersAndRejectCustomers() throws Exception {
         Customer customer = customerService.register("Admin No", "not.admin@example.com", "60133334444", "password123");
 
+        mockMvc.perform(get("/admin"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+
         mockMvc.perform(get("/admin/dashboard"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
+
+        mockMvc.perform(get("/admin").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isForbidden());
 
         mockMvc.perform(get("/admin/products").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isForbidden());
@@ -180,11 +189,25 @@ class SecurityIntegrationTests {
 
     @Test
     void authenticatedAdminCanAccessAdminPages() throws Exception {
+        mockMvc.perform(get("/admin").with(user("admin").roles("ADMIN")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/dashboard"));
+
         mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/admin/products").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void sharedLoginAcceptsAdminUsername() throws Exception {
+        mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", "admin")
+                        .param("password", "password"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/dashboard"));
     }
 
     @Test

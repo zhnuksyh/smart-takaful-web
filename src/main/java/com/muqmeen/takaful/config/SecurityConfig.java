@@ -28,7 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/register", "/success", "/payment/**", "/api/chat", "/error", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/submit-lead").hasRole("USER")
                         .requestMatchers("/account/**").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

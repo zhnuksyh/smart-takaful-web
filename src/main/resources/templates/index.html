@@ -45,10 +45,6 @@
                    class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
                     Login
                 </a>
-                <a href="/admin/dashboard"
-                   class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 md:inline-flex">
-                    Admin
-                </a>
                 <a th:unless="${customerSignedIn}" href="/login"
                    class="rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300">
                     Instant Quote
@@ -420,7 +416,6 @@
                     <a href="#products" class="hover:text-yellow-300">Products</a>
                     <a href="#faq" class="hover:text-yellow-300">FAQ</a>
                     <a href="/account" class="hover:text-yellow-300">Account</a>
-                    <a href="/admin/dashboard" class="hover:text-yellow-300">Admin</a>
                 </div>
             </div>
         </div>

@@ -136,6 +136,11 @@ public class WebController {
         return "success";
     }
 
+    @GetMapping("/admin")
+    public String adminEntry() {
+        return "redirect:/admin/dashboard";
+    }
+
     @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
         List<Lead> leads = takafulService.getAllLeadsForAdmin();
