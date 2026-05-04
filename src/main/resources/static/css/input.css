@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply bg-zinc-50 text-zinc-900 antialiased;
+    @apply bg-zinc-50 font-sans text-zinc-900 antialiased;
   }
 
   [x-cloak] {
@@ -24,4 +24,223 @@
   .brand-shell {
     @apply border border-zinc-200 bg-white shadow-premium;
   }
+}
+
+.font-bold,
+.font-extrabold,
+.font-black {
+  font-weight: 600 !important;
+}
+
+.hero-title {
+  font-weight: 800 !important;
+}
+
+body,
+.muqmeen-dark-site {
+  background: #050505;
+  color: #ffffff;
+}
+
+.brand-shell,
+.muqmeen-dark-site .brand-shell {
+  background-color: #101010 !important;
+  border-color: rgba(250, 204, 21, 0.22) !important;
+  color: #ffffff !important;
+}
+
+body main,
+body section,
+body footer,
+.muqmeen-dark-site main,
+.muqmeen-dark-site section,
+.muqmeen-dark-site footer {
+  background: #050505 !important;
+}
+
+body nav,
+.muqmeen-dark-site nav {
+  background: rgba(5, 5, 5, 0.94) !important;
+  border-color: rgba(250, 204, 21, 0.24) !important;
+}
+
+body .bg-white,
+body .bg-white\/90,
+body .bg-slate-50,
+body .bg-slate-100,
+body .bg-zinc-50,
+body .bg-zinc-100,
+.muqmeen-dark-site .bg-white,
+.muqmeen-dark-site .bg-white\/90,
+.muqmeen-dark-site .bg-slate-50,
+.muqmeen-dark-site .bg-slate-100,
+.muqmeen-dark-site .bg-zinc-50,
+.muqmeen-dark-site .bg-zinc-100 {
+  background-color: #101010 !important;
+}
+
+body .bg-yellow-50,
+body .bg-yellow-100,
+body .bg-amber-100,
+.muqmeen-dark-site .bg-yellow-50,
+.muqmeen-dark-site .bg-yellow-100,
+.muqmeen-dark-site .bg-amber-100 {
+  background-color: rgba(250, 204, 21, 0.14) !important;
+}
+
+body .bg-zinc-950,
+body .bg-slate-900,
+.muqmeen-dark-site .bg-zinc-950,
+.muqmeen-dark-site .bg-slate-900 {
+  background-color: #050505 !important;
+}
+
+body h1,
+body h2,
+body h3,
+body .text-zinc-950,
+body .text-zinc-900,
+body .text-slate-900,
+.muqmeen-dark-site h1,
+.muqmeen-dark-site h2,
+.muqmeen-dark-site h3,
+.muqmeen-dark-site .text-zinc-950,
+.muqmeen-dark-site .text-zinc-900,
+.muqmeen-dark-site .text-slate-900 {
+  color: #facc15 !important;
+}
+
+body p,
+body td,
+body th,
+body label,
+body .text-zinc-800,
+body .text-zinc-700,
+body .text-zinc-600,
+body .text-zinc-500,
+body .text-zinc-400,
+body .text-zinc-300,
+body .text-slate-800,
+body .text-slate-700,
+body .text-slate-600,
+body .text-slate-500,
+body .text-slate-400,
+body .text-slate-300,
+.muqmeen-dark-site p,
+.muqmeen-dark-site td,
+.muqmeen-dark-site th,
+.muqmeen-dark-site label,
+.muqmeen-dark-site .text-zinc-800,
+.muqmeen-dark-site .text-zinc-700,
+.muqmeen-dark-site .text-zinc-600,
+.muqmeen-dark-site .text-zinc-500,
+.muqmeen-dark-site .text-zinc-400,
+.muqmeen-dark-site .text-zinc-300,
+.muqmeen-dark-site .text-slate-800,
+.muqmeen-dark-site .text-slate-700,
+.muqmeen-dark-site .text-slate-600,
+.muqmeen-dark-site .text-slate-500,
+.muqmeen-dark-site .text-slate-400,
+.muqmeen-dark-site .text-slate-300 {
+  color: rgba(255, 255, 255, 0.76) !important;
+}
+
+body a,
+body button,
+body .text-white,
+body footer p,
+.muqmeen-dark-site .text-white,
+.muqmeen-dark-site footer p {
+  color: #ffffff !important;
+}
+
+body .text-yellow-300,
+body .text-yellow-400,
+body .text-yellow-500,
+body .text-yellow-600,
+body .text-yellow-700,
+body .text-amber-700,
+.muqmeen-dark-site .text-yellow-300,
+.muqmeen-dark-site .text-yellow-400,
+.muqmeen-dark-site .text-yellow-500,
+.muqmeen-dark-site .text-yellow-600,
+.muqmeen-dark-site .text-yellow-700,
+.muqmeen-dark-site .text-amber-700 {
+  color: #facc15 !important;
+}
+
+body .bg-yellow-400,
+body .bg-yellow-300,
+body .bg-yellow-400.text-zinc-950,
+body .bg-yellow-300.text-zinc-950,
+.muqmeen-dark-site .bg-yellow-400,
+.muqmeen-dark-site .bg-yellow-300,
+.muqmeen-dark-site .bg-yellow-400.text-zinc-950,
+.muqmeen-dark-site .bg-yellow-300.text-zinc-950 {
+  background-color: #facc15 !important;
+  color: #050505 !important;
+}
+
+body .bg-yellow-400 *,
+body .bg-yellow-300 *,
+.muqmeen-dark-site .bg-yellow-400 *,
+.muqmeen-dark-site .bg-yellow-300 * {
+  color: #050505 !important;
+}
+
+body .bg-zinc-950.text-white,
+body .bg-slate-900.text-white,
+.muqmeen-dark-site .bg-zinc-950.text-white,
+.muqmeen-dark-site .bg-slate-900.text-white {
+  color: #ffffff !important;
+}
+
+body [class*="border-zinc"],
+body [class*="border-slate"],
+body [class*="border-white"],
+.muqmeen-dark-site [class*="border-zinc"],
+.muqmeen-dark-site [class*="border-slate"],
+.muqmeen-dark-site [class*="border-white"] {
+  border-color: rgba(250, 204, 21, 0.22) !important;
+}
+
+body input,
+body select,
+body textarea,
+.muqmeen-dark-site input,
+.muqmeen-dark-site select,
+.muqmeen-dark-site textarea {
+  background-color: #050505 !important;
+  border-color: rgba(250, 204, 21, 0.35) !important;
+  color: #ffffff !important;
+}
+
+body input::placeholder,
+body textarea::placeholder,
+.muqmeen-dark-site input::placeholder,
+.muqmeen-dark-site textarea::placeholder {
+  color: rgba(255, 255, 255, 0.46) !important;
+}
+
+body #chat-panel,
+body #booking-modal > div,
+.muqmeen-dark-site #chat-panel,
+.muqmeen-dark-site #booking-modal > div {
+  background-color: #101010 !important;
+  color: #ffffff !important;
+}
+
+body table,
+body thead,
+body tbody,
+body tr {
+  background-color: #101010 !important;
+  color: #ffffff !important;
+}
+
+body .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+body .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+body .divide-zinc-100 > :not([hidden]) ~ :not([hidden]),
+body .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(250, 204, 21, 0.16) !important;
 }

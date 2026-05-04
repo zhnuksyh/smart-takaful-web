@@ -1,13 +1,13 @@
 package com.muqmeen.takaful.service;
 
 import com.muqmeen.takaful.domain.Lead;
+import com.muqmeen.takaful.domain.Customer;
 import com.muqmeen.takaful.repository.LeadRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class TakafulService {
@@ -18,12 +18,11 @@ public class TakafulService {
         this.leadRepository = leadRepository;
     }
 
-    public Lead processNewLead(Lead lead) {
+    public Lead processNewLead(Lead lead, Customer customer) {
         lead.setPhoneNumber(normalizePhoneNumber(lead.getPhoneNumber()));
+        lead.setCustomer(customer);
 
         if (lead.getTipAmount() != null && lead.getTipAmount().compareTo(BigDecimal.ZERO) > 0) {
-            String generatedBillCode = "MGM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            lead.setBillCode(generatedBillCode);
             lead.setPaymentStatus("PENDING");
         } else {
             lead.setPaymentStatus("SKIPPED");
@@ -40,8 +39,16 @@ public class TakafulService {
         return leadRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public List<Lead> getLeadsForCustomer(Customer customer) {
+        return leadRepository.findAllByCustomerOrderByCreatedAtDesc(customer);
+    }
+
     public Optional<Lead> findLead(Long id) {
         return leadRepository.findById(id);
+    }
+
+    public Optional<Lead> findCustomerLead(Long id, Customer customer) {
+        return leadRepository.findByIdAndCustomer(id, customer);
     }
 
     public Optional<Lead> findLeadByBillCode(String billCode) {
