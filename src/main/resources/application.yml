@@ -11,6 +11,15 @@ spring:
 server:
   port: ${PORT:8080}
 
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+
+toyyibpay:
+  mode: ${TOYYIBPAY_MODE:mock}
+  secret-key: ${TOYYIBPAY_SECRET_KEY:}
+  category-code: ${TOYYIBPAY_CATEGORY_CODE:}
+  base-url: ${TOYYIBPAY_BASE_URL:https://dev.toyyibpay.com}
+
 gemini:
   api-key: ${GEMINI_API_KEY:}
   model: ${GEMINI_MODEL:gemini-2.5-flash}

@@ -28,6 +28,10 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public Optional<Product> findActiveById(Long id) {
+        return productRepository.findById(id).filter(Product::isActive);
+    }
+
     public Product save(Product product) {
         return productRepository.save(product);
     }

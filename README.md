@@ -34,9 +34,13 @@ App starts on `http://localhost:8080`.
 | Route | Purpose |
 |---|---|
 | `GET /` | Landing page with product cards, consultation modal, and chatbot |
-| `POST /submit-lead` | Saves the consultation lead and redirects to payment or success |
+| `GET /login` / `POST /login` | Shared customer/admin login |
+| `GET /register` / `POST /register` | Customer account signup |
+| `GET /account` | Customer consultation and tip history |
+| `POST /submit-lead` | Authenticated customer consultation request; redirects to ToyyibPay or success |
 | `GET /payment/mock/{billCode}` | Simulated ToyyibPay gateway |
-| `GET /payment/callback` | Callback endpoint; `status_id=1` marks the lead paid |
+| `GET /payment/return` | User-facing ToyyibPay return page |
+| `POST /payment/callback` | ToyyibPay callback; hash-verified before payment status changes |
 | `GET /success` | Post-submission confirmation |
 | `POST /api/chat` | Public chatbot endpoint with CSRF and rate limiting |
 | `GET /admin/dashboard` | Protected leads table and total tips KPI |
@@ -52,9 +56,18 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `SPRING_DATASOURCE_PASSWORD` - Supabase DB password
 - `ADMIN_USERNAME` / `ADMIN_PASSWORD` - Spring Security admin login for `/admin/**`
 - `GEMINI_API_KEY` - Google AI Studio key for the floating chatbot
-- `TOYYIBPAY_API_KEY` / `TOYYIBPAY_CATEGORY_CODE` - reserved for real ToyyibPay integration
+- `APP_BASE_URL` - public base URL used in ToyyibPay return/callback URLs
+- `TOYYIBPAY_MODE` - `mock`, `sandbox`, or `live`
+- `TOYYIBPAY_SECRET_KEY` / `TOYYIBPAY_CATEGORY_CODE` - ToyyibPay bill credentials
+- `TOYYIBPAY_BASE_URL` - `https://dev.toyyibpay.com` for sandbox or `https://toyyibpay.com` for live
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
+
+## Accounts and Payments
+
+Customers can browse products publicly, but submitting a consultation requires a customer account. Product CTAs redirect anonymous visitors to login/register and return them to the selected product after sign-in.
+
+Consultations remain free. Optional tips use ToyyibPay bills in sandbox/live mode and a local mock gateway in dev. ToyyibPay callbacks are verified with the documented MD5 formula before the app marks a payment as paid, pending, or failed.
 
 ## Frontend Build
 
@@ -102,4 +115,4 @@ takaful-web-java/
 5. UI overhaul - complete
 6. Gemini chatbot - complete
 
-Spring Security protects `/admin/**`; public lead submission, mock payment, success, and chat routes remain accessible without login.
+Spring Security protects `/admin/**` for admins and `/account` plus `/submit-lead` for signed-in customers. Public browsing, signup/login, payment return/callback routes, success pages, and chat remain accessible as needed.
