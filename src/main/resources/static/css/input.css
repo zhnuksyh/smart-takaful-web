@@ -51,8 +51,8 @@ body.auth-page main {
   background: transparent !important;
 }
 
-main > section[id] {
-  scroll-margin-top: 7.5rem;
+main > section[id]:not(#home) {
+  scroll-margin-top: 6.25rem;
 }
 
 .brand-shell,
