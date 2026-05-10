@@ -51,6 +51,10 @@ body.auth-page main {
   background: transparent !important;
 }
 
+main > section[id] {
+  scroll-margin-top: 7.5rem;
+}
+
 .brand-shell,
 .muqmeen-dark-site .brand-shell {
   background-color: #101010 !important;
