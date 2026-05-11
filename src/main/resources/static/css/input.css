@@ -7,10 +7,17 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scrollbar-width: none;
   }
 
   body {
     @apply bg-zinc-50 font-sans text-zinc-900 antialiased;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
   }
 
   [x-cloak] {
