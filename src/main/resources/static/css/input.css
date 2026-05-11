@@ -289,41 +289,49 @@ body .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
 }
 
 .question-prompt-type-a {
-  animation: question-typewriter-in-a 5.8s steps(38, end) both;
+  animation: question-typewriter-cycle-a 6.8s steps(38, end) both;
 }
 
 .question-prompt-type-b {
-  animation: question-typewriter-in-b 5.8s steps(38, end) both;
+  animation: question-typewriter-cycle-b 6.8s steps(38, end) both;
 }
 
-@keyframes question-typewriter-in-a {
+@keyframes question-typewriter-cycle-a {
   0% {
     clip-path: inset(0 100% 0 0);
     opacity: 0;
   }
-  8% {
+  10% {
     clip-path: inset(0 100% 0 0);
     opacity: 1;
   }
-  46%,
-  100% {
+  34%,
+  78% {
     clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 100% 0 0);
     opacity: 1;
   }
 }
 
-@keyframes question-typewriter-in-b {
+@keyframes question-typewriter-cycle-b {
   0% {
     clip-path: inset(0 100% 0 0);
     opacity: 0;
   }
-  8% {
+  10% {
     clip-path: inset(0 100% 0 0);
     opacity: 1;
   }
-  46%,
-  100% {
+  34%,
+  78% {
     clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 100% 0 0);
     opacity: 1;
   }
 }
