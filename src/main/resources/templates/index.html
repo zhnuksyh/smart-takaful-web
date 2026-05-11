@@ -27,7 +27,7 @@
             </a>
 
             <div class="hidden items-center gap-8 text-sm font-semibold text-zinc-600 lg:flex">
-                <a href="#home" class="hover:text-zinc-950">Home</a>
+                <a href="/" class="hover:text-zinc-950">Home</a>
                 <a href="#products" class="hover:text-zinc-950">Products</a>
                 <a href="#reviews" class="hover:text-zinc-950">Reviews</a>
                 <a href="#faq" class="hover:text-zinc-950">FAQ</a>
@@ -493,9 +493,8 @@
          class="fixed bottom-24 right-6 z-50 hidden h-[38rem] max-h-[calc(100vh-7rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[1.75rem] border border-yellow-400/25 bg-[#101010] shadow-2xl">
         <div class="flex items-center justify-between border-b border-yellow-400/15 bg-zinc-950 px-5 py-4 text-white">
             <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-400 text-zinc-950">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </span>
+                <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt=""
+                     class="h-11 w-11 rounded-2xl object-contain">
                 <div>
                     <p class="text-base font-semibold leading-tight">Takaful Assistant</p>
                     <p class="text-sm text-zinc-300 leading-tight">Ask about our products</p>
@@ -536,7 +535,7 @@
                 panel.classList.remove('hidden');
                 panel.classList.add('flex');
                 if (!opened) {
-                    appendMessage('assistant', "Hi! I'm Muqmeen's Takaful assistant. Ask me about our PruBSN brochure products, Hibah planning, or how to book a consultation.");
+                    appendMessage('assistant', "Hi! I'm your Takaful assistant. Ask me about our PruBSN brochure products, Hibah planning, or how to book a consultation.");
                     opened = true;
                 }
                 setTimeout(function () { input.focus(); }, 50);
