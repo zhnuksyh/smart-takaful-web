@@ -16,6 +16,7 @@ Muqmeen Group digital funnel: a Spring Boot monolith that replaces manual Takafu
 - JDK 17 or newer
 - Node.js + npm for Tailwind CSS builds
 - No global Maven install required; the Maven Wrapper ships with the project
+- Docker Desktop, if running through containers
 
 ## Running Locally
 
@@ -28,6 +29,31 @@ npm run build:css
 On Windows PowerShell, `./mvnw.cmd spring-boot:run` also works when the wrapper can run in the shell.
 
 App starts on `http://localhost:8080`.
+
+## Running With Docker
+
+Docker is the easiest path for a new machine because it avoids installing Java, Maven, and Node separately.
+
+```bash
+docker compose up --build
+```
+
+The app will start on `http://localhost:8080` using the `dev` profile, H2 in-memory database, mock ToyyibPay, and local admin defaults:
+
+```text
+username: admin
+password: password
+```
+
+To test with real services later, copy `.env.example` to `.env`, fill in the client-owned credentials, and run Docker Compose again. Compose reads `.env` automatically.
+
+Useful Docker commands:
+
+```bash
+docker compose down
+docker compose up --build
+docker build -t muqmeen-takaful-web:local .
+```
 
 ## Key Routes
 
